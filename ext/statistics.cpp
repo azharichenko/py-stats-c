@@ -8,7 +8,7 @@ static PyObject* Py_mean(PyObject* self, PyObject* args)
 	{ 
 		return NULL; 
 	}  
-	return Py_BuildValue("i", result); 
+	return Py_BuildValue("f", result); 
 } 
 
 /* Module method table */
