@@ -5,10 +5,10 @@ This repo is just me exploring extending python using C/C++ to build knowledge f
 
 ## Goals
 - Simple to implement the following functions that exist in the `statistics` package
-  - [ ] `mean(data)`
+  - [x] `mean(data)`
   - [ ] `fmean(data)`
-  - [ ] `geometric_mean(data)`
-  - [ ] `harmonic_mean(data)`
+  - [x] `geometric_mean(data)`
+  - [x] `harmonic_mean(data)`
   - [ ] `median(data)`
   - [ ] `median_low(data)`
   - [ ] `median_high(data)`
