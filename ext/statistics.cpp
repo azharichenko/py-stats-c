@@ -2,6 +2,11 @@
 #include <Python.h>
 #include <math.h>
 
+static double mean(PyObject* self, PyObject* args) {
+	return 0.0;
+}
+
+
 static PyObject* Py_mean(PyObject* self, PyObject* args) { 
 	PyObject *list, *item;
 	Py_ssize_t n;
@@ -34,6 +39,7 @@ static PyObject* Py_geometric_mean(PyObject* self, PyObject* args) {
 	PyObject *list, *item;
 	Py_ssize_t n;
 	double result = 0.0;
+	
 	int i; 
 	if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) 
 	{ 
@@ -78,8 +84,16 @@ static PyObject* Py_harmonic_mean(PyObject* self, PyObject* args) {
 }
 
 // static PyObject* Py_median(PyObject* self, PyObject* args) {
+// 	PyObject *list, *item;
+// 	double median;
+// 	int i;
+	
+
+// 	if(!PyArg_)
+
+
 // 	return NULL;
-// }
+}
 
 // static PyObject* Py_median_low(PyObject* self, PyObject* args) {
 // 	return NULL;
@@ -101,9 +115,25 @@ static PyObject* Py_harmonic_mean(PyObject* self, PyObject* args) {
 // 	return NULL;
 // }
 
-// static PyObject* Py_pstdev(PyObject* self, PyObject* args) {
-// 	return NULL;
-// }
+static PyObject* Py_pstdev(PyObject* self, PyObject* args) {
+	PyObject *list, *item;
+	Py_ssize_t n;
+	double pstdev = 0.0, mu = mean(self, args);
+	int i; 
+
+
+	n = PyList_Size(list);
+	for(i = 0;i < n;i++) {
+		item = PyList_GetItem(list, i);
+		if(PyLong_Check(item)) {
+			result += (double)PyLong_AsLong(item);
+		}
+	}
+
+
+	pstdev = pow(pstdev / n)
+	return pstdev;
+}
 
 // static PyObject* Py_pvariance(PyObject* self, PyObject* args) {
 // 	return NULL;
