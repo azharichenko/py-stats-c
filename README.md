@@ -15,9 +15,9 @@ This repo is just me exploring extending python using C/C++ to build knowledge f
   - [ ] `median_grouped(data, interval=1)`
   - [ ] `mode(data)`
   - [ ] `multimode(data)`
-  - [ ] `pstdev(data, mu=None)`
-  - [ ] `pvariance(data, mu=None)`
-  - [ ] `stdev(data, xbar=None)`
-  - [ ] `variance(data, xbar=None)`
+  - [x] `pstdev(data, mu=None)`
+  - [x] `pvariance(data, mu=None)`
+  - [x] `stdev(data, xbar=None)`
+  - [x] `variance(data, xbar=None)`
   - [ ] `quantiles(data, *, n=4, method='exclusive')`
   - [ ] `NormalDist(mu=0.0, sigma=1.0)`
