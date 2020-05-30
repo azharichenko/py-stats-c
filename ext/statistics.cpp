@@ -137,9 +137,36 @@ static PyObject* Py_harmonic_mean(PyObject* self, PyObject* args) {
 // 	return NULL;
 // }
 
-// static PyObject* Py_mode(PyObject* self, PyObject* args) {
-// 	return NULL;
-// }
+static PyObject* Py_mode(PyObject* self, PyObject* args) {
+	PyObject *list, *item;	
+
+	if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) 
+	{ 
+		return NULL; 
+	}  
+
+	Py_ssize_t n;
+	n = PyList_Size(list);
+	if(n < 1) {
+		return NULL;
+	}
+
+	std::map<double, int> counter;
+	
+
+	for(i = 0;i < n;i++) {
+		item = PyList_GetItem(list, i);
+		if(PyLong_Check(item)) {
+			counter[(double)PyLong_AsLong(item)]++;
+		} else if(PyFloat_Check(item)) {
+			counter[PyFloat_AsDouble(item)]++;
+		} else {
+			return NULL;
+		}
+	}
+
+	return NULL;
+}
 
 // static PyObject* Py_multimode(PyObject* self, PyObject* args) {
 // 	return NULL;
@@ -265,6 +292,7 @@ static PyMethodDef StatisticMethods[] = {
 	{"pvariance", Py_pvariance, METH_VARARGS, PyDoc_STR("Return the population variance.")},
 	{"stdev", Py_stdev, METH_VARARGS, PyDoc_STR("Return the sample standard deviation.")},
 	{"variance", Py_variance, METH_VARARGS, PyDoc_STR("Return the sample variance.")},
+	{"mode", Py_mode, METH_VARARGS, PyDoc_STR("Returns the mode of the data.")}
 	{ NULL } 
 }; 
 
