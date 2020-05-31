@@ -13,7 +13,7 @@ This repo is just me exploring extending python using C/C++ to build knowledge f
   - [ ] `median_low(data)`
   - [ ] `median_high(data)`
   - [ ] `median_grouped(data, interval=1)`
-  - [ ] `mode(data)`
+  - [x] `mode(data)`
   - [ ] `multimode(data)`
   - [x] `pstdev(data, mu=None)`
   - [x] `pvariance(data, mu=None)`

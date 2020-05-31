@@ -1,6 +1,7 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <math.h>
+#include <map>
 
 
 static PyObject* Py_mean(PyObject* self, PyObject* args) { 
@@ -139,12 +140,11 @@ static PyObject* Py_harmonic_mean(PyObject* self, PyObject* args) {
 
 static PyObject* Py_mode(PyObject* self, PyObject* args) {
 	PyObject *list, *item;	
-
+	int i;
 	if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) 
 	{ 
 		return NULL; 
 	}  
-
 	Py_ssize_t n;
 	n = PyList_Size(list);
 	if(n < 1) {
@@ -152,7 +152,6 @@ static PyObject* Py_mode(PyObject* self, PyObject* args) {
 	}
 
 	std::map<double, int> counter;
-	
 
 	for(i = 0;i < n;i++) {
 		item = PyList_GetItem(list, i);
@@ -165,7 +164,18 @@ static PyObject* Py_mode(PyObject* self, PyObject* args) {
 		}
 	}
 
-	return NULL;
+	float value;
+	int count = -1;
+  	for (std::map<double,int>::iterator it=counter.begin(); it!=counter.end(); ++it) {
+    	if(it->second > 1 && it->second > count) {
+			value = it->first;
+			count = it->second;
+		}
+	}
+	if(count == -1) {
+		return NULL;
+	}
+	return Py_BuildValue("f", value);
 }
 
 // static PyObject* Py_multimode(PyObject* self, PyObject* args) {
@@ -292,7 +302,7 @@ static PyMethodDef StatisticMethods[] = {
 	{"pvariance", Py_pvariance, METH_VARARGS, PyDoc_STR("Return the population variance.")},
 	{"stdev", Py_stdev, METH_VARARGS, PyDoc_STR("Return the sample standard deviation.")},
 	{"variance", Py_variance, METH_VARARGS, PyDoc_STR("Return the sample variance.")},
-	{"mode", Py_mode, METH_VARARGS, PyDoc_STR("Returns the mode of the data.")}
+	{"mode", Py_mode, METH_VARARGS, PyDoc_STR("Returns the mode of the data.")},
 	{ NULL } 
 }; 
 
