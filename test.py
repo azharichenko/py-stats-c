@@ -13,7 +13,7 @@ params = [
     (statistics.variance, stats.variance),
     (statistics.pstdev, stats.pstdev),
     (statistics.stdev, stats.stdev),
-    (statistics.mode, stats.mode),
+    (stats.mode, statistics.mode),
 ]
 
 # Tests from https://github.com/python/cpython/blob/master/Lib/test/test_statistics.py

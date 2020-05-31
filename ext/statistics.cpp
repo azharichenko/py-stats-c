@@ -3,6 +3,7 @@
 #include <math.h>
 #include <map>
 
+PyObject* StatisticsError = NULL;
 
 static PyObject* Py_mean(PyObject* self, PyObject* args) { 
 	PyObject *list, *item;
@@ -25,14 +26,14 @@ static PyObject* Py_mean(PyObject* self, PyObject* args) {
 		if(PyLong_Check(item)) {
 			result += (double)PyLong_AsLong(item);
 		} else if (PyFloat_Check(item)) {
-			result += PyFloat_AsDouble(item);
+			result += PyFloat_AS_DOUBLE(item);
 		} else {
 			return NULL;
 		}
 	}
 
 	result /= (double)n;
-	return Py_BuildValue("f", result); 
+	return PyFloat_FromDouble(result); 
 } 
 
 // static PyObject* Py_fmean(PyObject* self, PyObject* args) {
@@ -64,7 +65,7 @@ static PyObject* Py_geometric_mean(PyObject* self, PyObject* args) {
 			if(PyLong_Check(item)) {
 				result = (double)PyLong_AsLong(item);
 			} else if(PyFloat_Check(item)) {
-				result = PyFloat_AsDouble(item);
+				result = PyFloat_AS_DOUBLE(item);
 			} else {
 				return NULL;
 			}
@@ -74,14 +75,14 @@ static PyObject* Py_geometric_mean(PyObject* self, PyObject* args) {
 		if(PyLong_Check(item)) {
 			result *= (double)PyLong_AsLong(item);
 		} else if (PyFloat_Check(item)) {
-			result *= PyFloat_AsDouble(item);
+			result *= PyFloat_AS_DOUBLE(item);
 		} else {
 			return NULL;
 		}
 	}
 
 	result = pow(result, 1.0/n);
-	return Py_BuildValue("f", result); 
+	return PyFloat_FromDouble(result); 
 }
 
 static PyObject* Py_harmonic_mean(PyObject* self, PyObject* args) {
@@ -105,13 +106,13 @@ static PyObject* Py_harmonic_mean(PyObject* self, PyObject* args) {
 		if(PyLong_Check(item)) {
 			result += 1.0/PyLong_AsLong(item);
 		} else if(PyFloat_Check(item)) {
-			result += 1.0/PyFloat_AsDouble(item);
+			result += 1.0/PyFloat_AS_DOUBLE(item);
 		} else {
 			return NULL;
 		}
 	}
 	result = (double)n / result;
-	return Py_BuildValue("f", result); 
+	return PyFloat_FromDouble(result); 
 }
 
 // static PyObject* Py_median(PyObject* self, PyObject* args) {
@@ -158,7 +159,7 @@ static PyObject* Py_mode(PyObject* self, PyObject* args) {
 		if(PyLong_Check(item)) {
 			counter[(double)PyLong_AsLong(item)]++;
 		} else if(PyFloat_Check(item)) {
-			counter[PyFloat_AsDouble(item)]++;
+			counter[PyFloat_AS_DOUBLE(item)]++;
 		} else {
 			return NULL;
 		}
@@ -173,9 +174,10 @@ static PyObject* Py_mode(PyObject* self, PyObject* args) {
 		}
 	}
 	if(count == -1) {
+		PyErr_SetString(StatisticsError, "all values are equally common");
 		return NULL;
 	}
-	return Py_BuildValue("f", value);
+	return PyFloat_FromDouble(value);
 }
 
 // static PyObject* Py_multimode(PyObject* self, PyObject* args) {
@@ -190,7 +192,7 @@ static double _ss(PyObject* self, PyObject* args) {
 	}
 
 	Py_ssize_t n;
-	double pstdev = 0.0, mu = PyFloat_AsDouble(mean);
+	double pstdev = 0.0, mu = PyFloat_AS_DOUBLE(mean);
 	int i; 
 
 	if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) 
@@ -208,7 +210,7 @@ static double _ss(PyObject* self, PyObject* args) {
 		if(PyLong_Check(item)) {
 			pstdev += pow((double)PyLong_AsLong(item) - mu, 2);
 		} else if(PyFloat_Check(item)) {
-			pstdev += pow(PyFloat_AsDouble(item) - mu, 2);
+			pstdev += pow(PyFloat_AS_DOUBLE(item) - mu, 2);
 		} else {
 			return -1.0;
 		}
@@ -244,7 +246,7 @@ static PyObject* Py_pstdev(PyObject* self, PyObject* args) {
 		return NULL;
 	}
 
-	double pstdev = PyFloat_AsDouble(pvariance);
+	double pstdev = PyFloat_AS_DOUBLE(pvariance);
 	pstdev = pow(pstdev, 0.5);
 
 	return Py_BuildValue("f", pstdev);
@@ -279,7 +281,7 @@ static PyObject* Py_stdev(PyObject* self, PyObject* args) {
 		return NULL;
 	}
 
-	double stdev = PyFloat_AsDouble(variance);
+	double stdev = PyFloat_AS_DOUBLE(variance);
 	stdev = pow(stdev, 0.5);
 
 	return Py_BuildValue("f", stdev);
@@ -317,6 +319,11 @@ static struct PyModuleDef statsmodule = {
 
 /* Module initialization function */
 PyMODINIT_FUNC PyInit_stats(void) 
-{ 
-	return PyModule_Create(&statsmodule); 
+{
+	PyObject* module;
+	module = PyModule_Create(&statsmodule); 
+	if(StatisticsError == NULL) {
+		StatisticsError = PyErr_NewException("stats.StatisticsError", PyExc_Exception, NULL);
+	}
+	return module;
 }
