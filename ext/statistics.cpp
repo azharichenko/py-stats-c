@@ -1,9 +1,16 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
 #include <math.h>
+
+#include <algorithm> 
 #include <map>
+#include <vector> 
 
 PyObject* StatisticsError = NULL;
+
+
+
+
 
 static PyObject* Py_mean(PyObject* self, PyObject* args) { 
 	PyObject *list, *item;
@@ -115,17 +122,24 @@ static PyObject* Py_harmonic_mean(PyObject* self, PyObject* args) {
 	return PyFloat_FromDouble(result); 
 }
 
-// static PyObject* Py_median(PyObject* self, PyObject* args) {
-// 	PyObject *list, *item;
-// 	double median;
-// 	int i;
+static PyObject* Py_median(PyObject* self, PyObject* args) {
+	PyObject *list, *item;
+	double median;
+	int i;
+	std::vector<double> values;
 	
+	std::stable_sort(values.begin(), values.end());
 
-// 	if(!PyArg_)
+	// if(!PyArg_)
 
+	i = value.size / 2;
 
-// 	return NULL;
-// }
+	if(value.size % 2 == 0) {
+		return NULL
+	}
+
+	return PyFloat_FromDouble(values.at(i));
+}
 
 // static PyObject* Py_median_low(PyObject* self, PyObject* args) {
 // 	return NULL;
