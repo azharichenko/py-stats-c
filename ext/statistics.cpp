@@ -9,9 +9,6 @@
 PyObject* StatisticsError = NULL;
 
 
-
-
-
 static PyObject* Py_mean(PyObject* self, PyObject* args) { 
 	PyObject *list, *item;
 	Py_ssize_t n;
@@ -97,8 +94,7 @@ static PyObject* Py_harmonic_mean(PyObject* self, PyObject* args) {
 	Py_ssize_t n;
 	double result = 0.0;
 	int i; 
-	if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) 
-	{ 
+	if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) { 
 		return NULL; 
 	}  
 
@@ -127,7 +123,29 @@ static PyObject* Py_median(PyObject* self, PyObject* args) {
 	double median;
 	int i;
 	std::vector<double> values;
+	auto it = values.begin();
 	
+	if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) { 
+		return NULL; 
+	}  
+
+	n = PyList_Size(list);
+	
+	if(n == 0) {
+		return NULL;
+	}
+
+	for(i = 0;i < n;i++) {
+		item = PyList_GetItem(list, i);
+		if(PyLong_Check(item)) {
+			result += 1.0/PyLong_AsLong(item);
+		} else if(PyFloat_Check(item)) {
+			result += 1.0/PyFloat_AS_DOUBLE(item);
+		} else {
+			return NULL;
+		}
+	}
+
 	std::stable_sort(values.begin(), values.end());
 
 	// if(!PyArg_)
@@ -135,7 +153,7 @@ static PyObject* Py_median(PyObject* self, PyObject* args) {
 	i = value.size / 2;
 
 	if(value.size % 2 == 0) {
-		return NULL
+		return NULL;
 	}
 
 	return PyFloat_FromDouble(values.at(i));
