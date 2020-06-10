@@ -14,6 +14,9 @@ params = [
     (statistics.pstdev, stats.pstdev),
     (statistics.stdev, stats.stdev),
     (stats.mode, statistics.mode),
+    (statistics.median,  stats.median),
+    (statistics.median_high,  stats.median_high),
+    (statistics.median_low,  stats.median_low),
 ]
 
 # Tests from https://github.com/python/cpython/blob/master/Lib/test/test_statistics.py

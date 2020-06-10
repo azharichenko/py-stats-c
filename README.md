@@ -9,9 +9,9 @@ This repo is just me exploring extending python using C/C++ to build knowledge f
   - [ ] `fmean(data)`
   - [x] `geometric_mean(data)`
   - [x] `harmonic_mean(data)`
-  - [ ] `median(data)`
-  - [ ] `median_low(data)`
-  - [ ] `median_high(data)`
+  - [x] `median(data)`
+  - [x] `median_low(data)`
+  - [x] `median_high(data)`
   - [ ] `median_grouped(data, interval=1)`
   - [x] `mode(data)`
   - [ ] `multimode(data)`
