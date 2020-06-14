@@ -434,7 +434,7 @@ char const* say_hi()
     return "Hi!";
 }
 
-BOOST_PYTHON_MODULE(statistics)
+BOOST_PYTHON_MODULE(stats)
 {
     def("say_hi", say_hi);
 }
