@@ -1,121 +1,20 @@
 // #define PY_SSIZE_T_CLEAN
 // #include <Python.h>
-// #include <math.h>
+#include <math.h>
 
-// #include <algorithm>
-// #include <map>
-// #include <vector>
+#include <algorithm>
+#include <map>
+#include <vector>
 
-// #include<iostream>
+#include<iostream>
 
 // PyObject *StatisticsError = NULL;
 
-// static PyObject *Py_mean(PyObject *self, PyObject *args) {
-//   PyObject *list, *item;
-//   Py_ssize_t n;
-//   double result = 0.0;
-//   int i;
-//   if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) {
-//     return NULL;
-//   }
-
-//   n = PyList_Size(list);
-
-//   if (n == 0) {
-//     return NULL;
-//   }
-
-//   for (i = 0; i < n; i++) {
-//     item = PyList_GetItem(list, i);
-//     if (PyLong_Check(item)) {
-//       result += (double)PyLong_AsLong(item);
-//     } else if (PyFloat_Check(item)) {
-//       result += PyFloat_AS_DOUBLE(item);
-//     } else {
-//       return NULL;
-//     }
-//   }
-
-//   result /= (double)n;
-//   return PyFloat_FromDouble(result);
-// }
 
 // // static PyObject* Py_fmean(PyObject* self, PyObject* args) {
 // // 	// TODO: Look into why the implementation difference between fmean and
 // // mean 	return NULL;
 // // }
-
-// static PyObject *Py_geometric_mean(PyObject *self, PyObject *args) {
-//   // TODO: handle issue of floating point error
-//   PyObject *list, *item;
-//   Py_ssize_t n;
-//   double result = 0.0;
-
-//   int i;
-//   if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) {
-//     return NULL;
-//   }
-
-//   n = PyList_Size(list);
-
-//   if (n == 0) {
-//     return NULL;
-//   }
-
-//   for (i = 0; i < n; i++) {
-//     item = PyList_GetItem(list, i);
-//     if (i == 0) {
-//       if (PyLong_Check(item)) {
-//         result = (double)PyLong_AsLong(item);
-//       } else if (PyFloat_Check(item)) {
-//         result = PyFloat_AS_DOUBLE(item);
-//       } else {
-//         return NULL;
-//       }
-//       continue;
-//     }
-
-//     if (PyLong_Check(item)) {
-//       result *= (double)PyLong_AsLong(item);
-//     } else if (PyFloat_Check(item)) {
-//       result *= PyFloat_AS_DOUBLE(item);
-//     } else {
-//       return NULL;
-//     }
-//   }
-
-//   result = pow(result, 1.0 / n);
-//   return PyFloat_FromDouble(result);
-// }
-
-// static PyObject *Py_harmonic_mean(PyObject *self, PyObject *args) {
-//   PyObject *list, *item;
-//   Py_ssize_t n;
-//   double result = 0.0;
-//   int i;
-//   if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) {
-//     return NULL;
-//   }
-
-//   n = PyList_Size(list);
-
-//   if (n == 0) {
-//     return NULL;
-//   }
-
-//   for (i = 0; i < n; i++) {
-//     item = PyList_GetItem(list, i);
-//     if (PyLong_Check(item)) {
-//       result += 1.0 / PyLong_AsLong(item);
-//     } else if (PyFloat_Check(item)) {
-//       result += 1.0 / PyFloat_AS_DOUBLE(item);
-//     } else {
-//       return NULL;
-//     }
-//   }
-//   result = (double)n / result;
-//   return PyFloat_FromDouble(result);
-// }
 
 // static PyObject *Py_median(PyObject *self, PyObject *args) {
 //   PyObject *list, *item;
@@ -380,35 +279,6 @@
 // // 	return NULL;
 // // }
 
-// /* Module method table */
-// static PyMethodDef StatisticMethods[] = {
-//     {"mean", Py_mean, METH_VARARGS,
-//      PyDoc_STR("Return the sample arithmetic mean of data.")},
-//     {"fmean", Py_mean, METH_VARARGS,
-//      PyDoc_STR("Return the sample arithmetic mean of data.")},
-//     {"geometric_mean", Py_geometric_mean, METH_VARARGS,
-//      PyDoc_STR("Return the sample arithmetic mean of data.")},
-//     {"harmonic_mean", Py_harmonic_mean, METH_VARARGS,
-//      PyDoc_STR("Return the sample arithmetic mean of data.")},
-//     {"pstdev", Py_pstdev, METH_VARARGS,
-//      PyDoc_STR("Return the population standard deviation.")},
-//     {"pvariance", Py_pvariance, METH_VARARGS,
-//      PyDoc_STR("Return the population variance.")},
-//     {"stdev", Py_stdev, METH_VARARGS,
-//      PyDoc_STR("Return the sample standard deviation.")},
-//     {"variance", Py_variance, METH_VARARGS,
-//      PyDoc_STR("Return the sample variance.")},
-//     {"mode", Py_mode, METH_VARARGS, PyDoc_STR("Returns the mode of the data.")},
-//     {"median", Py_median, METH_VARARGS,
-//      PyDoc_STR("Returns the median of the data.")},
-//     {"median_high", Py_median_high, METH_VARARGS,
-//      PyDoc_STR("Returns the median of the data. If even it return the upper "
-//                "median.")},
-//     {"median_low", Py_median_low, METH_VARARGS,
-//      PyDoc_STR("Returns the median of the data.  If even it return the lower "
-//                "median.")},
-//     {NULL}};
-
 // /* Module structure */
 // static struct PyModuleDef statsmodule = {
 //     PyModuleDef_HEAD_INIT, "stats",
@@ -426,15 +296,50 @@
 //   return module;
 // }
 #include <boost/python.hpp>
+#include <boost/python/module.hpp>
+#include <boost/python/class.hpp>
+#include <boost/python/operators.hpp>
+#include <boost/operators.hpp>
+#include <math.h>
+
 
 using namespace boost::python;
 
-char const* say_hi()
+
+object mean(object data)
 {
-    return "Hi!";
+    object total = object(0.0);
+    for(int i = 0;i < len(data);i++){
+        total += data[i];
+    }
+    total /= len(data);
+    return total;
 }
+
+// object geometric_mean(object data)
+// {
+//     object total = object(data[0]);
+//     for(int i = 1;i < len(data);i++){
+//         total *= data[i];
+//     }
+//     // total /= len(data);
+//     return pow(total, 1.0 / len(data);
+//     // return pow(total, 1.0 / n);
+// }
+
+// double harmonic_mean(object seq) {
+//     object total = object(0);
+//     for(int i = 0;i < len(data);i++){
+//         total += 1 / extract<double>(data[i]);
+//     }
+//     return total / n;
+// }
+
 
 BOOST_PYTHON_MODULE(stats)
 {
-    def("say_hi", say_hi);
+    def("mean", mean);
+    def("fmean", mean);
+    // def("geometric_mean", geometric_mean);
+    // def("harmonic_mean", mean);
 }
