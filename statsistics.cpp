@@ -1,6 +1,3 @@
-// #define PY_SSIZE_T_CLEAN
-// #include <Python.h>
-#include <math.h>
 
 #include <algorithm>
 #include <map>
@@ -11,47 +8,6 @@
 // PyObject *StatisticsError = NULL;
 
 
-// // static PyObject* Py_fmean(PyObject* self, PyObject* args) {
-// // 	// TODO: Look into why the implementation difference between fmean and
-// // mean 	return NULL;
-// // }
-
-// static PyObject *Py_median(PyObject *self, PyObject *args) {
-//   PyObject *list, *item;
-//   int i, n;
-//   std::vector<double> values;
-//   auto it = values.begin();
-
-//   if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) {
-//     return NULL;
-//   }
-
-//   n = PyList_Size(list);
-
-//   if (n == 0) {
-//     return NULL;
-//   }
-
-//   for (i = 0; i < n; i++) {
-//     item = PyList_GetItem(list, i);
-//     if (PyLong_Check(item)) {
-// 		it = values.insert(it, (double)PyLong_AsLong(item));
-//     } else if (PyFloat_Check(item)) {
-// 		it = values.insert(it, PyFloat_AS_DOUBLE(item));
-//     } else {
-//       return NULL;
-//     }
-//   }
-
-//   std::stable_sort(values.begin(), values.end());
-//   i = values.size() / 2;
-
-//   if (n % 2 == 0) {
-//     return PyFloat_FromDouble( (values.at(i) + values.at(i - 1)) / 2);
-//   }
-
-//   return PyFloat_FromDouble(values.at(i));
-// }
 
 // static PyObject* Py_median_low(PyObject* self, PyObject* args) {
 //   PyObject *list, *item;
@@ -300,46 +256,125 @@
 #include <boost/python/class.hpp>
 #include <boost/python/operators.hpp>
 #include <boost/operators.hpp>
-#include <math.h>
 
 
 using namespace boost::python;
 
 
-object mean(object data)
-{
-    object total = object(0.0);
-    for(int i = 0;i < len(data);i++){
-        total += data[i];
+double mean(object seq) {
+    double total = 0.0;
+    for(int i = 0;i < len(seq);i++) {
+        total += extract<double>(seq[i]);
     }
-    total /= len(data);
+    total /= len(seq);
     return total;
 }
 
-// object geometric_mean(object data)
-// {
-//     object total = object(data[0]);
-//     for(int i = 1;i < len(data);i++){
-//         total *= data[i];
+// WIP
+// double geometric_mean(object seq) {
+//     double total = extract<double>(seq[0]);
+//     for(int i = 1;i < len(seq);i++) {
+//         total *= extract<double>(seq[i]);
 //     }
-//     // total /= len(data);
-//     return pow(total, 1.0 / len(data);
-//     // return pow(total, 1.0 / n);
+//     return pow(total, 1.0 / len(seq));
 // }
 
-// double harmonic_mean(object seq) {
-//     object total = object(0);
-//     for(int i = 0;i < len(data);i++){
-//         total += 1 / extract<double>(data[i]);
+double harmonic_mean(object seq) {
+    double total = 0.0;
+    for(int i = 0;i < len(seq);i++) {
+        total += 1.0 / extract<double>(seq[i]);
+    }
+    total = len(seq) / total;
+    return total;
+}
+
+object median(list seq) {
+    seq.sort();
+    long midway = len(seq) / 2;
+    if (len(seq) % 2 == 0) {
+        return (seq[midway] + seq[midway - 1]) / 2.0;
+    }
+    return seq[midway];
+}
+// static PyObject *Py_median(PyObject *self, PyObject *args) {
+//   PyObject *list, *item;
+//   int i, n;
+//   std::vector<double> values;
+//   auto it = values.begin();
+
+//   if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) {
+//     return NULL;
+//   }
+
+//   n = PyList_Size(list);
+
+//   if (n == 0) {
+//     return NULL;
+//   }
+
+//   for (i = 0; i < n; i++) {
+//     item = PyList_GetItem(list, i);
+//     if (PyLong_Check(item)) {
+// 		it = values.insert(it, (double)PyLong_AsLong(item));
+//     } else if (PyFloat_Check(item)) {
+// 		it = values.insert(it, PyFloat_AS_DOUBLE(item));
+//     } else {
+//       return NULL;
 //     }
-//     return total / n;
+//   }
+
+//   std::stable_sort(values.begin(), values.end());
+//   i = values.size() / 2;
+
+//   if (n % 2 == 0) {
+//     return PyFloat_FromDouble( (values.at(i) + values.at(i - 1)) / 2);
+//   }
+
+//   return PyFloat_FromDouble(values.at(i));
 // }
 
+// double _ss(object seq) {
+//     double mu = mean(seq);
+//     double pstdev = 0.0;
+
+//     for(int i =0)
+
+//     return pstdev;
+// }
+// static double _ss(PyObject *self, PyObject *args) {
+//   PyObject *list, *item, *mean = Py_mean(self, args);
+
+//   Py_ssize_t n;
+//   double pstdev = 0.0, mu = PyFloat_AS_DOUBLE(mean);
+//   int i;
+
+//   if (!PyArg_ParseTuple(args, "O!", &PyList_Type, &list)) {
+//     return -1.0;
+//   }
+
+//   n = PyList_Size(list);
+//   if (n == 0) {
+//     return -1.0;
+//   }
+
+//   for (i = 0; i < n; i++) {
+//     item = PyList_GetItem(list, i);
+//     if (PyLong_Check(item)) {
+//       pstdev += pow((double)PyLong_AsLong(item) - mu, 2);
+//     } else if (PyFloat_Check(item)) {
+//       pstdev += pow(PyFloat_AS_DOUBLE(item) - mu, 2);
+//     } else {
+//       return -1.0;
+//     }
+//   }
+//   return pstdev;
+// }
 
 BOOST_PYTHON_MODULE(stats)
 {
     def("mean", mean);
     def("fmean", mean);
     // def("geometric_mean", geometric_mean);
-    // def("harmonic_mean", mean);
+    def("harmonic_mean", harmonic_mean);
+    def("median", median);
 }
