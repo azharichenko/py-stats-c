@@ -8,13 +8,14 @@ import pytest
 params = [
     (statistics.mean, stats.mean),
     (statistics.fmean, stats.fmean),
-    # (statistics.geometric_mean, stats.geometric_mean), 
+    (statistics.geometric_mean, stats.geometric_mean), 
     (statistics.harmonic_mean, stats.harmonic_mean),
     (statistics.pvariance, stats.pvariance),
     (statistics.variance, stats.variance),
     (statistics.pstdev, stats.pstdev),
     (statistics.stdev, stats.stdev),
     (stats.mode, statistics.mode),
+    (statistics.multimode,  stats.multimode),
     (statistics.median,  stats.median),
     (statistics.median_high,  stats.median_high),
     (statistics.median_low,  stats.median_low),
@@ -25,7 +26,7 @@ params = [
 @pytest.mark.parametrize("original,mine", params)
 def test_ints(original, mine):
     # Test mean with ints.
-    data = [0, 1, 2, 3, 3, 3, 4, 5, 5, 6, 7, 7, 7, 7, 8, 9]
+    data = [0, 1, 2, 3, 3, 3, 3, 4, 5, 5, 5, 6, 7, 7, 7, 7, 8, 9]
     random.shuffle(data)
     assert original(data) == mine(data)
     

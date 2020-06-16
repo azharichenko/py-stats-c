@@ -6,7 +6,7 @@ This repo is just me exploring extending python using C/C++ to build knowledge f
 ## Goals
 - Simple to implement the following functions that exist in the `statistics` package
   - [x] `mean(data)`
-  - [ ] `fmean(data)`
+  - [x] `fmean(data)`
   - [x] `geometric_mean(data)`
   - [x] `harmonic_mean(data)`
   - [x] `median(data)`
@@ -14,7 +14,7 @@ This repo is just me exploring extending python using C/C++ to build knowledge f
   - [x] `median_high(data)`
   - [ ] `median_grouped(data, interval=1)`
   - [x] `mode(data)`
-  - [ ] `multimode(data)`
+  - [x] `multimode(data)`
   - [x] `pstdev(data, mu=None)`
   - [x] `pvariance(data, mu=None)`
   - [x] `stdev(data, xbar=None)`

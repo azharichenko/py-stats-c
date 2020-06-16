@@ -24,14 +24,13 @@ double mean(object seq) {
     return total;
 }
 
-// WIP
-// double geometric_mean(object seq) {
-//     double total = extract<double>(seq[0]);
-//     for(int i = 1;i < len(seq);i++) {
-//         total *= extract<double>(seq[i]);
-//     }
-//     return pow(total, 1.0 / len(seq));
-// }
+double geometric_mean(object seq) {
+    double total = extract<double>(seq[0]);
+    for(int i = 1;i < len(seq);i++) {
+        total *= extract<double>(seq[i]);
+    }
+    return std::pow(total, 1.0 / len(seq));
+}
 
 double harmonic_mean(object seq) {
     double total = 0.0;
@@ -99,20 +98,46 @@ double stdev(object seq) {
 
 object mode(object seq) {
     std::map<object, int> counter;
+    object value;
+    int count = -1;
+
+    if(len(seq) == 0) {
+        return object();
+    }
 
     for(int i = 0;i < len(seq);i++) {
         counter[seq[i]]++;
-    }
-
-    object value;
-    int count = -1;
-    for (std::map<object, int>::iterator it = counter.begin(); it != counter.end(); ++it) {
-        if (it->second > 1 && it->second > count) {
-            value = it->first;
-            count = it->second;
+        if (counter[seq[i]] > count) {
+            value = seq[i];
+            count = counter[seq[i]];
         }
     }
+
     return value;
+}
+
+list multimode(object seq) {
+    std::map<object, int> counter;
+    int count = -1;
+
+    if(len(seq) == 0) {
+        return list();
+    }
+
+    for(int i = 0;i < len(seq);i++) {
+        counter[seq[i]]++;
+        if (counter[seq[i]] > count) {
+            count = counter[seq[i]];
+        }
+    }
+
+    list w;
+    for (std::map<object, int>::iterator it = counter.begin(); it != counter.end(); ++it) {
+        if (it->second == count) {
+            w.append(it->first);
+        }
+    }
+    return w;
 }
 
 //   if (count == -1) {
@@ -120,12 +145,16 @@ object mode(object seq) {
 //     return NULL;
 //   }
 
+list quantiles(object data) {
+    list result;
+    return result;
+}
 
 BOOST_PYTHON_MODULE(stats)
 {
     def("mean", mean);
     def("fmean", mean);
-    // def("geometric_mean", geometric_mean);
+    def("geometric_mean", geometric_mean);
     def("harmonic_mean", harmonic_mean);
     def("median", median);
     def("median_high", median_high);
@@ -135,4 +164,6 @@ BOOST_PYTHON_MODULE(stats)
     def("pstdev", pstdev);
     def("stdev", stdev);
     def("mode", mode);
+    def("multimode", multimode);
+    def("quantiles", quantiles, (arg("data")));
 }
