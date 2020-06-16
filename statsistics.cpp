@@ -1,9 +1,5 @@
 //  "An implementation of the statistics module in the python standard library",
-
 #include<boost/python.hpp>
-#include<boost/python/module.hpp>
-#include<boost/python/class.hpp>
-#include<boost/python/operators.hpp>
 #include<boost/operators.hpp>
 
 #include<math.h>
@@ -112,7 +108,7 @@ object mode(object seq) {
             count = counter[seq[i]];
         }
     }
-
+    
     return value;
 }
 
@@ -139,11 +135,6 @@ list multimode(object seq) {
     }
     return w;
 }
-
-//   if (count == -1) {
-//     PyErr_SetString(StatisticsError, "all values are equally common");
-//     return NULL;
-//   }
 
 list quantiles(object data) {
     list result;
