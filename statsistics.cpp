@@ -1,129 +1,164 @@
 //  "An implementation of the statistics module in the python standard library",
 #include<boost/python.hpp>
+#include<boost/python/def.hpp>
+#include<boost/python/exception_translator.hpp>
 #include<boost/operators.hpp>
 
 #include<math.h>
 #include<algorithm>
+#include<exception>
 #include<map>
 #include<vector>
 #include<iostream>
 
 using namespace boost::python;
 
+struct StatisticsError : std::exception {
+};
 
-double mean(object seq) {
+void translate(StatisticsError const& e) {
+    PyErr_SetString(PyExc_RuntimeError,"Something is wrong");
+}
+
+
+object mean(object data) {
+    if(len(data) < 1) {
+        throw StatisticsError();
+    } else if (len(data) == 1) {
+        return data[0];
+    }
+
     double total = 0.0;
-    for(int i = 0;i < len(seq);i++) {
-        total += extract<double>(seq[i]);
+    for(int i = 0;i < len(data);i++) {
+        total += extract<double>(data[i]);
     }
-    total /= len(seq);
-    return total;
+    total /= len(data);
+    return object(total);
 }
 
-double geometric_mean(object seq) {
-    double total = extract<double>(seq[0]);
-    for(int i = 1;i < len(seq);i++) {
-        total *= extract<double>(seq[i]);
+object geometric_mean(object data) {
+    if(len(data) < 1) {
+        throw StatisticsError();
+    } else if (len(data) == 1) {
+        return data[0];
     }
-    return std::pow(total, 1.0 / len(seq));
+
+    double total = extract<double>(data[0]);
+    for(int i = 1;i < len(data);i++) {
+        total *= extract<double>(data[i]);
+    }
+    return object(pow(total, 1.0 / len(data)));
 }
 
-double harmonic_mean(object seq) {
+object harmonic_mean(object data) {
+    if(len(data) < 1) {
+        throw StatisticsError();
+    } else if (len(data) == 1) {
+        return data[0];
+    }
+
     double total = 0.0;
-    for(int i = 0;i < len(seq);i++) {
-        total += 1.0 / extract<double>(seq[i]);
+    for(int i = 0;i < len(data);i++) {
+        total += 1.0 / extract<double>(data[i]);
     }
-    total = len(seq) / total;
-    return total;
+    total = len(data) / total;
+    return object(total);
 }
 
-object median(list seq) {
-    seq.sort();
-    long midway = len(seq) / 2;
-    if (len(seq) % 2 == 0) {
-        return object((extract<double>(seq[midway]) + extract<double>(seq[midway - 1])) / 2.0);
+object median(list data) {
+    if(len(data) == 0) {
+        throw StatisticsError();
     }
-    return seq[midway];
-}
-
-object median_low(list seq) {
-    seq.sort();
-    long midway = len(seq) / 2;
-    if (len(seq) % 2 == 0) {
-        return seq[midway - 1];
+    data.sort();
+    long midway = len(data) / 2;
+    if (len(data) % 2 == 0) {
+        return object((extract<double>(data[midway]) + extract<double>(data[midway - 1])) / 2.0);
     }
-    return seq[midway];
+    return data[midway];
 }
 
-object median_high(list seq) {
-    seq.sort();
-    return seq[len(seq) / 2];
+object median_low(list data) {
+    if(len(data) == 0) {
+        throw StatisticsError();
+    }
+    data.sort();
+    long midway = len(data) / 2;
+    if (len(data) % 2 == 0) {
+        return data[midway - 1];
+    }
+    return data[midway];
 }
 
-double _ss(object seq) {
-    double mu = mean(seq);
+object median_high(list data) {
+    if(len(data) == 0) {
+        throw StatisticsError();
+    }
+    data.sort();
+    return data[len(data) / 2];
+}
+
+double _ss(object data, object c) {
+    if(len(data) == 0) {
+        throw StatisticsError();
+    }
+    double mu = mean(data);
     double pstdev = 0.0;
 
-    for(int i = 0;i < len(seq);i++) {
-        pstdev += std::pow(extract<double>(seq[i]) - mu, 2);
+    for(int i = 0;i < len(data);i++) {
+        pstdev += std::pow(extract<double>(data[i]) - mu, 2);
     }
 
     return pstdev;
 }
 
-double pvariance(object seq) {
-    return _ss(seq) / len(seq);
+object pvariance(object data, object mu) {
+    return object(_ss(data, mu) / len(data));
 }
 
-double pstdev(object seq) {
-    double pvar = pvariance(seq);
-    return std::pow(pvar, 0.5);
+object pstdev(object data, object mu) {
+    return object(pow((_ss(data ,mu) / len(data)), 0.5));
 }
 
-double variance(object seq) {
-    if(len(seq) == 1) {
-        return 0;
-    }
-    return _ss(seq) / (len(seq) - 1);
+object variance(object data, object xbar) {
+    return object(_ss(data, xbar) / (len(data) - 1));
 }
 
-double stdev(object seq) {
-    double var = variance(seq);
-    return std::pow(var, 0.5);
+object stdev(object data, object xbar) {
+    return object(pow(_ss(data, xbar) / (len(data) - 1), 0.5));
 }
 
-object mode(object seq) {
+object mode(object data) {
     std::map<object, int> counter;
     object value;
     int count = -1;
 
-    if(len(seq) == 0) {
+    if(len(data) == 0) {
         return object();
     }
 
-    for(int i = 0;i < len(seq);i++) {
-        counter[seq[i]]++;
-        if (counter[seq[i]] > count) {
-            value = seq[i];
-            count = counter[seq[i]];
+    for(int i = 0;i < len(data);i++) {
+        counter[data[i]]++;
+        if (counter[data[i]] > count) {
+            value = data[i];
+            count = counter[data[i]];
         }
     }
     
     return value;
 }
 
-list multimode(object seq) {
+list multimode(object data) {
     std::map<object, int> counter;
     int count = -1;
 
-    if(len(seq) == 0) {
+    if(len(data) == 0) {
         return list();
     }
 
-    for(int i = 0;i < len(seq);i++) {
-        counter[seq[i]]++;
-        if (counter[seq[i]] > count) {
-            count = counter[seq[i]];
+    for(int i = 0;i < len(data);i++) {
+        counter[data[i]]++;
+        if (counter[data[i]] > count) {
+            count = counter[data[i]];
         }
     }
 
@@ -136,13 +171,18 @@ list multimode(object seq) {
     return w;
 }
 
-list quantiles(object data) {
+list quantiles(object data, object n, object method) {
     list result;
     return result;
 }
 
+object median_grouped(object data, object interval) {
+    return object();
+}
+
 BOOST_PYTHON_MODULE(stats)
 {
+    register_exception_translator<StatisticsError>(&translate);
     def("mean", mean);
     def("fmean", mean);
     def("geometric_mean", geometric_mean);
@@ -150,11 +190,12 @@ BOOST_PYTHON_MODULE(stats)
     def("median", median);
     def("median_high", median_high);
     def("median_low", median_low);
-    def("pvariance", pvariance);
-    def("variance", variance);
-    def("pstdev", pstdev);
-    def("stdev", stdev);
+    def("pvariance", pvariance, (args("data"), args("mu")=object()));
+    def("variance", variance, (args("data"), args("xbar")=object()));
+    def("pstdev", pstdev, (args("data"), args("mu")=object()));
+    def("stdev", stdev, (args("data"), args("xbar")=object()));
     def("mode", mode);
     def("multimode", multimode);
-    def("quantiles", quantiles, (arg("data")));
+    def("quantiles", quantiles, (arg("data"), arg("n")=4, arg("method")="exclusive"));
+    def("median_grouped", median_grouped, (arg("data"), arg("interval")=1));
 }

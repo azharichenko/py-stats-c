@@ -52,8 +52,8 @@ def test_empty(original, mine):
     with pytest.raises(statistics.StatisticsError):
         original(data) 
         
-    # with pytest.raises(stats.StatisticsError):
-    #     mine(data)
+    with pytest.raises(RuntimeError):
+        mine(data)
 
 @pytest.mark.parametrize("original,mine", params)
 def test_ints(original, mine):
