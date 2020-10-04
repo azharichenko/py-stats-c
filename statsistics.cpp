@@ -101,11 +101,17 @@ double _ss(object data, object c) {
     if(len(data) == 0) {
         throw StatisticsError();
     }
-    double mu = mean(data);
+    double c_1;
+    if(c.is_none()) {
+        c_1 = extract<double>(mean(data));
+    } else {
+        c_1 = extract<double>(c);
+    }
+    
     double pstdev = 0.0;
 
     for(int i = 0;i < len(data);i++) {
-        pstdev += std::pow(extract<double>(data[i]) - mu, 2);
+        pstdev += std::pow(extract<double>(data[i]) - c_1, 2);
     }
 
     return pstdev;
@@ -177,7 +183,16 @@ list quantiles(object data, object n, object method) {
 }
 
 object median_grouped(object data, object interval) {
-    return object();
+    if(len(data) == 0) {
+        throw StatisticsError();
+    } else if (len(data) == 1) {
+        return data[0];
+    }
+
+    double L = extract<double>(data[len(data/2)]) + extract<double>(interval) / 2;
+    // Add bisect details
+
+    return object(L);
 }
 
 BOOST_PYTHON_MODULE(stats)
